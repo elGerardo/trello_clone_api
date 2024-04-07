@@ -19,9 +19,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Tasks',
             fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('deleted_at', models.DateTimeField(default=None)),
+                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+                ('deleted_at', models.DateTimeField(default=None, null=True)),
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('title', models.CharField(default=None, max_length=255, null=True)),
                 ('description', models.TextField(default=None, null=True)),

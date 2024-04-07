@@ -14,10 +14,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('deleted_at', models.DateTimeField(default=None)),
-                ('id', models.CharField(editable=False, primary_key=True, serialize=False)),
+                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+                ('deleted_at', models.DateTimeField(default=None, null=True)),
+                ('id', models.CharField(editable=True, primary_key=True, serialize=False)),
             ],
             options={
                 'db_table': 'users',

@@ -14,9 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.http import JsonResponse
+
+def live(_):
+    return JsonResponse({'service': 'ToDo', 'version': 1}, status=200)
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('trello_clone/live', live),
+    path('', include('user.urls')),
+    path('', include('tasks.urls'))
 ]
