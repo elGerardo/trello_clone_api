@@ -36,3 +36,8 @@ class DefaultModelsField(models.Model):
             response[field.name] = field_value
 
         return response
+
+    def merge(self, payload={}):
+        for key, value in payload.items():
+            setattr(self, key, value)
+        return self

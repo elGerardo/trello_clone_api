@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -57,9 +58,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'trelloApi.middlewares.json_middleware.JsonMiddleware',
+    'trelloApi.middlewares.http_exception_middleware.HttpExceptionMiddleware',
+    'trelloApi.middlewares.header_user_middleware.HeaderUserMiddleware'
+]
+
+MIDDLEWARE_URL_SKIP = [
+    '/trello_clone/live',
+    '/trello_clone/user'
 ]
 
 ROOT_URLCONF = 'trelloApi.urls'
+
 
 TEMPLATES = [
     {
@@ -135,3 +144,27 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "Content-Type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-user-id",
+    "X-USER-ID",
+    "X-User-Id",
+)
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)

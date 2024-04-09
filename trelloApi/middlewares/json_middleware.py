@@ -12,7 +12,7 @@ class JsonMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.method in ('GET', 'POST') \
+        if request.method in ('GET', 'POST', 'PUT') \
                 and (content_type := request.META.get('CONTENT_TYPE')) \
                 and 'application/json' in content_type.lower():
             try:
