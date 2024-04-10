@@ -33,6 +33,7 @@ class UpdateTaskForm(forms.ModelForm):
         priority_belong_user = Priority.objects.filter(
             id=priority_id, user_id=user_id
         ).first()
+
         if priority_belong_user is None:
             raise forms.ValidationError(
                 {"priority_id": ["Priority Id does not belong to user"]}

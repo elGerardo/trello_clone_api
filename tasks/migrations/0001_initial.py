@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(default=None, max_length=255, null=True)),
                 ('description', models.TextField(default=None, null=True)),
                 ('secuence', models.IntegerField()),
+                ('is_finished', models.BooleanField(editable=True, default=False)),
                 ('priority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='priority.priority')),
                 ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='steps.steps')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.user')),

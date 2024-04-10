@@ -7,6 +7,36 @@ class AppQuerySet(QuerySet):
     def delete(self):
         self.update(deleted_at=timezone.now())
 
+    def serialize(self, serialize_sets=[]):
+        items = []
+        models = self
+
+        for model in models:
+            item = {}
+            for field in model._meta.fields:
+                field_value = getattr(model, field.name)
+                if field.get_internal_type() == "ForeignKey":
+                    item[field.name + "_id"] = field_value.id
+                    continue
+                item[field.name] = field_value
+
+            for serialize_set in serialize_sets:
+                item_sets = []
+                for set_item in getattr(model, serialize_set).all():
+                    item_set = {}
+                    for model_item in set_item._meta.fields:
+                        field_value = getattr(set_item, model_item.name)
+                        if model_item.get_internal_type() == "ForeignKey":
+                            item_set[model_item.name + "_id"] = field_value.id
+                            continue
+                        item_set[model_item.name] = field_value
+                    item_sets.append(item_set)
+
+                item[serialize_set] = item_sets
+
+            items.append(item)
+        return items
+
 
 class AppManager(Manager):
     def get_queryset(self):

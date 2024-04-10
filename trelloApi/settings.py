@@ -50,6 +50,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'trelloApi.middlewares.json_middleware.JsonMiddleware',
+    'trelloApi.middlewares.http_exception_middleware.HttpExceptionMiddleware',
+    'trelloApi.middlewares.header_user_middleware.HeaderUserMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,9 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'trelloApi.middlewares.json_middleware.JsonMiddleware',
-    'trelloApi.middlewares.http_exception_middleware.HttpExceptionMiddleware',
-    'trelloApi.middlewares.header_user_middleware.HeaderUserMiddleware'
 ]
 
 MIDDLEWARE_URL_SKIP = [

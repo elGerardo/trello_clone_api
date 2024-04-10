@@ -26,27 +26,25 @@ def store(request):
 
 @api_view(["PUT", "DELETE", "GET"])
 def crud_object(request, task_id):
+    user_id = request.META.get("HTTP_X_USER_ID")
     if request.method == "PUT":
-        result = update(request=request, task_id=task_id)
+        result = update(request=request, task_id=task_id, user_id=user_id)
 
     if request.method == "DELETE":
-        result = destroy(request=request, task_id=task_id)
+        result = destroy(request=request, task_id=task_id, user_id=user_id)
 
     if request.method == "GET":
-        result = find(request=request, task_id=task_id)
+        result = find(request=request, task_id=task_id, user_id=user_id)
 
     return JsonResponse(result["response"], status=result["status"])
 
 
-def find(request, task_id):
-    task = get_object_or_404(
-        Tasks, id=task_id, user_id=request.META.get("HTTP_X_USER_ID")
-    )
+def find(request, task_id, user_id):
+    task = get_object_or_404(Tasks, id=task_id, user_id=user_id)
     return {"response": task.serialize(), "status": 200}
 
 
-def update(request, task_id):
-    user_id = request.META.get("HTTP_X_USER_ID")
+def update(request, task_id, user_id):
     task = get_object_or_404(Tasks, id=task_id, user_id=user_id)
 
     form = UpdateTaskForm({**request.json_body, "user_id": user_id})
@@ -56,13 +54,11 @@ def update(request, task_id):
     task.merge(form.cleaned_data)
     task.save()
 
-    return {"response": task.serialize(), "status": 201}
+    return {"response": task.serialize(), "status": 202}
 
 
-def destroy(request, task_id):
-    task = get_object_or_404(
-        Tasks, id=task_id, user_id=request.META.get("HTTP_X_USER_ID")
-    )
+def destroy(request, task_id, user_id):
+    task = get_object_or_404(Tasks, id=task_id, user_id=user_id)
     task.delete()
 
     return {"response": {}, "status": 204}

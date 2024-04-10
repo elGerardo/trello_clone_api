@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from trelloApi.settings import MIDDLEWARE_URL_SKIP
 from user.models import User
 
@@ -7,9 +7,8 @@ class HeaderUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
         if request.path in MIDDLEWARE_URL_SKIP:
-            return response
+            return self.get_response(request)
         
         x_user_id =  request.META.get('HTTP_X_USER_ID')
 
@@ -21,4 +20,6 @@ class HeaderUserMiddleware:
         if user_exist is None:
             return JsonResponse({ "message": "X-USER-ID Not exist" }, status=404)
         
-        return response
+        setattr(request, 'current_user', user_exist)
+
+        return self.get_response(request)
