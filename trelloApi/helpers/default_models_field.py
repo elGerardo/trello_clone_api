@@ -22,6 +22,13 @@ class AppQuerySet(QuerySet):
 
             for serialize_set in serialize_sets:
                 item_sets = []
+                serialize_split = serialize_set.split(' ')
+                serialize_as = serialize_set 
+                if len(serialize_split) > 1:
+                    serialize_set = serialize_split[0]
+                    if len(serialize_split) >= 3:
+                        serialize_as = serialize_split[2]
+
                 for set_item in getattr(model, serialize_set).all():
                     item_set = {}
                     for model_item in set_item._meta.fields:
@@ -32,7 +39,7 @@ class AppQuerySet(QuerySet):
                         item_set[model_item.name] = field_value
                     item_sets.append(item_set)
 
-                item[serialize_set] = item_sets
+                item[serialize_as] = item_sets
 
             items.append(item)
         return items

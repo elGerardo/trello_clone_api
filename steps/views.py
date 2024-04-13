@@ -18,9 +18,15 @@ def crud_objects(request):
 
 
 def getAll(request):
-    user = getattr(request, 'current_user', None)
-    steps_with_tasks = Steps.objects.filter(user_id=user.id).prefetch_related('tasks_set').all()
-    return {"response": steps_with_tasks.serialize(serialize_sets=['tasks_set']), "status": 200}
+    user = getattr(request, "current_user", None)
+    steps_with_tasks = (
+        Steps.objects.filter(user_id=user.id).prefetch_related("tasks_set").all()
+    )
+    return {
+        "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"]),
+        "status": 200,
+    }
+
 
 def store(request):
     user = getattr(request, "current_user", None)
