@@ -4,6 +4,8 @@ from steps.forms.create_step_form import CreateStepForm
 from steps.forms.update_step_form import UpdateStepForm
 from django.shortcuts import get_object_or_404
 from steps.models import Steps
+from django.db.models import Prefetch
+from tasks.models import Tasks
 
 
 @api_view(["POST", "GET"])
@@ -19,11 +21,11 @@ def crud_objects(request):
 
 def getAll(request):
     user = getattr(request, "current_user", None)
-    steps_with_tasks = (
-        Steps.objects.filter(user_id=user.id).prefetch_related("tasks_set").all()
-    )
+    steps_with_tasks = Steps.objects.filter(user_id=user.id).prefetch_related(
+        Prefetch("tasks_set", queryset=Tasks.objects.select_related("priority"))
+    ).all()
     return {
-        "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"]),
+        "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"], serialize_prefetch=["tasks.priority"]),
         "status": 200,
     }
 
