@@ -5,6 +5,8 @@ from tasks.forms.update_task_form import UpdateTaskForm
 from .models import Tasks
 from django.shortcuts import get_object_or_404
 from steps.models import Steps
+from tasks.forms.bulk_update_task_form import BulkUpdateTaskForm
+from django_bulk_load import bulk_update_models
 
 
 # Create your views here.
@@ -75,3 +77,27 @@ def update_task_step(request, task_id, step_id):
     task.save()
 
     return JsonResponse(task.serialize("steps"), status=201)
+
+
+@api_view(["PUT"])
+def bulk_update(request):
+    user = getattr(request, "current_user", None)
+
+    if not isinstance(request.json_body, list):
+        return JsonResponse({"messsage": ["Payload must be an array"]})
+    
+    bulk_models = []
+    bulk_response = []
+
+    for index, item in enumerate(request.json_body):
+        form = BulkUpdateTaskForm({**item, "user_id": user.id})
+         
+        if form.is_valid() == False:
+            return JsonResponse({index: form.errors}, status=422)
+        
+        model = form.cleaned_data["task"].merge(form.cleaned_data)
+        bulk_models.append(model)
+        bulk_response.append(model.serialize())
+
+    bulk_update_models(models=bulk_models, return_models=False, update_field_names=["step_id", "secuence"])
+    return JsonResponse(bulk_response, status=201, safe=False)

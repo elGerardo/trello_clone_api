@@ -13,7 +13,7 @@ class CreateTaskFrom(forms.ModelForm):
 
     title = forms.CharField(max_length=255, required=True)
     description = forms.CharField(max_length=255, required=True)
-    secuence = forms.IntegerField(required=True)
+    secuence = forms.IntegerField(required=False)
 
     user = forms.ModelChoiceField(queryset=User.objects.all(),required=False)
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=False)
@@ -29,6 +29,12 @@ class CreateTaskFrom(forms.ModelForm):
         user_id = cleaned_data.get("user_id")
         priority_id = cleaned_data.get("priority_id")
         step_id = cleaned_data.get("step_id")
+
+        new_secuence = 1
+
+        last_task_secuence = Tasks.objects.filter(step_id=step_id, user_id=user_id).order_by("-secuence").first()
+        if last_task_secuence is not None:
+            new_secuence = last_task_secuence.secuence + 1
 
         user_exist = User.objects.filter(id=user_id).first()
         if user_exist is None:
@@ -51,5 +57,6 @@ class CreateTaskFrom(forms.ModelForm):
         cleaned_data["user"] = user_exist
         cleaned_data["priority"] = priority_belong_user
         cleaned_data["step"] = step_belong_user
+        cleaned_data["secuence"] = new_secuence
         
         return cleaned_data

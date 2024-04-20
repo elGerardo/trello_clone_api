@@ -30,11 +30,12 @@ SECRET_KEY = 'django-insecure-_ikmi_j&xfp(m!o5l)8(wnnxvkw*1+t(wkgtp2u7o0gd1l9(ea
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('APP_DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 INSTALLED_APPS = [
+    'corsheaders',
     'user',
     'priority',
     'steps',
@@ -45,11 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders'
+    'django.contrib.staticfiles'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'trelloApi.middlewares.json_middleware.JsonMiddleware',
     'trelloApi.middlewares.http_exception_middleware.HttpExceptionMiddleware',
     'trelloApi.middlewares.header_user_middleware.HeaderUserMiddleware',
@@ -145,9 +146,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
-CORS_ALLOW_HEADERS = (
+CORS_ALLOW_HEADERS = [
+    "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Headers",
     "accept",
     "authorization",
     "content-type",
@@ -158,13 +161,13 @@ CORS_ALLOW_HEADERS = (
     "x-user-id",
     "X-USER-ID",
     "X-User-Id",
-)
+]
 
-CORS_ALLOW_METHODS = (
+CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
     'OPTIONS',
     'PATCH',
     'POST',
-    'PUT',
-)
+    'PUT'
+]

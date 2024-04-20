@@ -7,7 +7,7 @@ class AppQuerySet(QuerySet):
     def delete(self):
         self.update(deleted_at=timezone.now())
 
-    def serialize(self, serialize_sets=[], serialize_prefetch=[]):
+    def serialize(self, serialize_sets=[], serialize_prefetch=[], aliases_values={}):
         items = []
         models = self
 
@@ -15,9 +15,13 @@ class AppQuerySet(QuerySet):
             item = {}
             for field in model._meta.fields:
                 field_value = getattr(model, field.name)
+                if aliases_values.get(field.name) is not None:
+                    item[aliases_values[field.name]] = field_value
+                
                 if field.get_internal_type() == "ForeignKey":
                     item[field.name + "_id"] = field_value.id
                     continue
+
                 item[field.name] = field_value
 
             for serialize_set in serialize_sets:
@@ -45,6 +49,7 @@ class AppQuerySet(QuerySet):
                 item[serialize_as] = item_sets
 
             items.append(item)
+        
         return items
 
 

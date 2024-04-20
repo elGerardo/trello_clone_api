@@ -6,7 +6,16 @@ from django.shortcuts import get_object_or_404
 from priority.models import Priority
 
 
-@api_view(["POST"])
+@api_view(["POST", "GET"])
+def crud_objects(request):
+    if request.method == "POST":
+        result = store(request=request)
+
+    if request.method == "GET":
+        result = getAll(request=request)
+    print("alskdhjaskl")
+    return JsonResponse(result["response"], status=result["status"], safe=False)
+
 def store(request):
     user = getattr(request, "current_user", None)
 
@@ -16,7 +25,14 @@ def store(request):
 
     priority = form.save()
 
-    return JsonResponse(priority.serialize(), status=201)
+    return {"response": priority.serialize(), "status": 201}
+
+def getAll(request):
+    user = getattr(request, "current_user", None)
+
+    priorities = Priority.objects.filter(user_id=user.id)
+
+    return {"response": priorities.serialize(aliases_values={"id": "value", "name": "label"}), "status": 200}
 
 
 @api_view(["GET", "PUT", "DELETE"])

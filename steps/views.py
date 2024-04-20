@@ -21,11 +21,11 @@ def crud_objects(request):
 
 def getAll(request):
     user = getattr(request, "current_user", None)
-    steps_with_tasks = Steps.objects.filter(user_id=user.id).prefetch_related(
-        Prefetch("tasks_set", queryset=Tasks.objects.select_related("priority"))
+    steps_with_tasks = Steps.objects.filter(user_id=user.id).order_by("order").prefetch_related(
+        Prefetch("tasks_set", queryset=Tasks.objects.order_by("secuence").select_related("priority"))
     ).all()
     return {
-        "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"], serialize_prefetch=["tasks.priority"]),
+        "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"], serialize_prefetch=["tasks.priority"], aliases_values={"id":"value", "name": "label"}),
         "status": 200,
     }
 
