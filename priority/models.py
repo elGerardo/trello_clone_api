@@ -10,7 +10,6 @@ class Priority(DefaultModelsField):
     color = models.CharField(null=False, max_length=255, editable=True, unique=False)
     is_default = models.BooleanField(null=False, editable=True, unique=False)
     is_first = models.BooleanField(null=False, editable=True, unique=False)
-    order = models.IntegerField(null=False, editable=True, unique=False)
 
     # Relationships
     user = models.ForeignKey(User, on_delete=models.CASCADE)
