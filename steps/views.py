@@ -33,13 +33,17 @@ def getAll(request):
 def store(request):
     user = getattr(request, "current_user", None)
 
+    last_step = Steps.objects.filter(user_id=user.id).order_by("-order").first()
+
     form = CreateStepForm(
-        {**request.json_body, "is_default": False, "is_first": False, "user": user}
+        {**request.json_body, "order": last_step.order,  "is_default": False, "is_first": False, "user": user}
     )
     if form.is_valid() == False:
         return JsonResponse(form.errors, status=422)
 
     step = form.save()
+
+    last_step.merge({"order": last_step.order + 1}).save()
 
     return {"response": step.serialize(), "status": 201}
 
