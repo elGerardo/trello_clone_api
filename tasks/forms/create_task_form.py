@@ -12,7 +12,7 @@ class CreateTaskFrom(forms.ModelForm):
         fields = ["title", "description", "secuence", "user", "priority", "step"]
 
     title = forms.CharField(max_length=255, required=True)
-    description = forms.CharField(max_length=255, required=True)
+    description = forms.CharField(max_length=255, required=False)
     secuence = forms.IntegerField(required=False)
 
     user = forms.ModelChoiceField(queryset=User.objects.all(),required=False)
