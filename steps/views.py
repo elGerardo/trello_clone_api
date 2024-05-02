@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from steps.models import Steps
 from django.db.models import Prefetch
 from tasks.models import Tasks
+from django_bulk_load import bulk_update_models
+from steps.forms.bulk_update_step_form import BulkUpdateStepForm
 
 
 @api_view(["POST", "GET"])
@@ -22,7 +24,7 @@ def crud_objects(request):
 def getAll(request):
     user = getattr(request, "current_user", None)
     steps_with_tasks = Steps.objects.filter(user_id=user.id).order_by("order").prefetch_related(
-        Prefetch("tasks_set", queryset=Tasks.objects.order_by("secuence").select_related("priority"))
+        Prefetch("tasks_set", queryset=Tasks.objects.filter().order_by("secuence").select_related("priority"))
     ).all()
     return {
         "response": steps_with_tasks.serialize(serialize_sets=["tasks_set as tasks"], serialize_prefetch=["tasks.priority"], aliases_values={"id":"value", "name": "label"}),
@@ -80,6 +82,10 @@ def destroy(request, step_id):
     step = get_object_or_404(Steps, id=step_id, user_id=user.id)
     step.delete()
 
+    steps = Steps.objects.filter(user_id=user.id).order_by('order')
+    for index, step in enumerate(steps):
+        step.merge({ "order": index + 1 }).save()
+
     return {"response": {}, "status": 204}
 
 
@@ -89,3 +95,27 @@ def find(request, step_id):
     step = get_object_or_404(Steps, id=step_id, user_id=user.id)
 
     return {"response": step.serialize(), "status": 200}
+
+
+@api_view(["PUT"])
+def bulk_update(request):
+    user = getattr(request, "current_user", None)
+
+    if not isinstance(request.json_body, list):
+        return JsonResponse({"messsage": ["Payload must be an array"]})
+    
+    bulk_models = []
+    bulk_response = []
+
+    for index, item in enumerate(request.json_body):
+        form = BulkUpdateStepForm({**item, "user_id": user.id})
+         
+        if form.is_valid() == False:
+            return JsonResponse({index: form.errors}, status=422)
+        
+        model = form.cleaned_data["step"].merge(form.cleaned_data)
+        bulk_models.append(model)
+        bulk_response.append(model.serialize())
+
+    bulk_update_models(models=bulk_models, return_models=False, update_field_names=["order"])
+    return JsonResponse(bulk_response, status=201, safe=False)

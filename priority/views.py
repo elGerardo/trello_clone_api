@@ -13,7 +13,6 @@ def crud_objects(request):
 
     if request.method == "GET":
         result = getAll(request=request)
-    print("alskdhjaskl")
     return JsonResponse(result["response"], status=result["status"], safe=False)
 
 def store(request):
