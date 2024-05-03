@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 80
 
-CMD ["gunicorn", "trelloApi.wsgi"]
+CMD ["web:", "gunicorn", "trelloApi.wsgi"]
